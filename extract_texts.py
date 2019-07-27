@@ -1,6 +1,6 @@
-import regex
 import json
 import sys
+import regex
 
 # extract_text.py <input> <output.json>
 # output:
@@ -11,49 +11,45 @@ import sys
 #   }
 # ]
 #
-
 def extract_texts(filename):
-  file = open(filename, "r")
-  title_regex = regex.compile(r"(\p{Lu}+\ ?)+")
+    file = open(filename, "r")
+    title_regex = regex.compile(r"(\p{Lu}+\ ?)+")
 
-  json = []
-  entry = {}
-  keep_running = True
-  line = file.readline()
-  while keep_running :
-    match = title_regex.search(line)
-    content = line.replace("\n", "")
-
-    if(match != None and match.group(0) == content):
-      title = entry.get('title')
-
-      if(title != None):
-        json.append(entry)
-        entry = {}
-
-      entry['title'] = content
-    else:
-      text = entry.get('text')
-
-      if(text == None):
-        text = []
-
-      text.append(content)
-      entry['text'] = text
-
+    entries = []
+    entry = {}
+    keep_running = True
     line = file.readline()
-    if(line == ''):
-      json.append(entry)
-      keep_running = False
+    while keep_running:
+        match = title_regex.search(line)
+        content = line.replace("\n", "")
 
-  return json
+        if(match is not None and match.group(0) == content):
+            title = entry.get('title')
+
+            if title is not None:
+                entries.append(entry)
+                entry = {}
+
+            entry['title'] = content
+        else:
+            text = entry.get('text', [])
+            text.append(content)
+            entry['text'] = text
+
+        line = file.readline()
+        if line == '':
+            entries.append(entry)
+            keep_running = False
+
+    return entries
+
 
 def export(json_hash, filename):
-  exportable = json.dumps(json_hash)
-  file = open(filename, "w")
-  file.write(exportable)
-  file.close()
+    exportable = json.dumps(json_hash)
+    file = open(filename, "w")
+    file.write(exportable)
+    file.close()
 
 
-result = extract_texts(str(sys.argv[1]))
-export(result, str(sys.argv[2]))
+RESULT = extract_texts(str(sys.argv[1]))
+export(RESULT, str(sys.argv[2]))
