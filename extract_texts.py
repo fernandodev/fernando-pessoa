@@ -1,17 +1,23 @@
+"""
+    expected arguments input:
+        filename.txt
+        outputfilename.json
+"""
 import json
 import sys
 import regex
 
-# extract_text.py <input> <output.json>
-# output:
-# [
-#   {
-#     title: String
-#     text: [String]
-#   }
-# ]
-#
 def extract_texts(filename):
+    """
+    extract_text.py <input> <output.json>
+    output:
+    [
+      {
+        title: String
+        text: [String]
+      }
+    ]
+    """
     file = open(filename, "r")
     title_regex = regex.compile(r"(\p{Lu}+\ ?)+")
 
@@ -45,6 +51,7 @@ def extract_texts(filename):
 
 
 def export(json_hash, filename):
+    """ just exports the generated has to a json file """
     exportable = json.dumps(json_hash)
     file = open(filename, "w")
     file.write(exportable)
